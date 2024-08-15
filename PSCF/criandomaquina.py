@@ -14,6 +14,32 @@ class CPU:
             self.es.output(f"{a} <- {c}\n")
             c = c + 1
             a += 1
+class CacheSimples:
+    def __init(self, kc, ram):
+      self.tam_cache = 2**kc
+      self.dados = [0] * self.tam_cache
+      self.bloco = -1
+
+    def read(self, endereco):
+        bloco_endereco = int( endereco / self.tam_cache)
+        if bloco_endereco == self.bloco:
+            print('Cache hit')
+            pos = endereco - self.bloco * self.tam_cache
+            return self.dados[pos]
+
+        else:
+            print('Cache miss')
+
+            # cache foi modificada? -> atualizar RAM
+
+            #traz da RAM o bloco contendo o endereco
+
+            #return...
+
+
+    def write(self, endereco, valor):
+        
+
 
 class RAM:
     def __init__(self, k):
@@ -49,6 +75,8 @@ def main():
     ram.write(11, 111)
 
     cpu.run(10)
+
+    
 
 
 if __name__ == '__main__':
