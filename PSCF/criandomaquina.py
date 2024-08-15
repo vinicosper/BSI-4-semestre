@@ -1,30 +1,62 @@
-class CPU:
-    def __init__(self, ram, es):
-        self.ram = ram
-        self.es = es
-        self.pc = 0
-    
-    def run(self, endereco):
-        self.pc = endereco
-        a = self.ram.read(self.pc)
-        b = self.ram.read(self.pc + 1)
-        c = 1
-        while a <= b:
-            self.ram.write(a,c)
-            self.es.output(f"{a} <- {c}\n")
-            c = c + 1
-            a += 1
+#!/usr/bin/env python3
+
+#
+# von Neumann - Arquitetura Básica
+# Todos as classes em um mesmo arquivo
+# PSCF - BSI - Prof. Luiz Lima Jr.
+#
+# Arquitetura formada de 3 componentes básicos:
+#
+# 1. Memória => RAM
+# 2. CPU
+# 3. Entrada e Saída (IO)
+#
+
+class IO:
+    def output(self, s):
+        print(s, end='')
+
+    def input(self, prompt):
+        return input(prompt)
+
+
+# Exceção (erro)
+class EnderecoInvalido(Exception):
+    def __init__(self, ender):
+        self.ender = ender
+
+
+class RAM:
+    def __init__(self, k):
+        self.tamanho = 2**k
+        self.memoria = [0] * self.tamanho
+
+    def verifica_endereco(self, ender):
+        if (ender < 0) or (ender >= self.tamanho):
+            raise EnderecoInvalido(ender)
+
+    def capacidade(self):
+        return self.tamanho
+
+    def read(self, ender):
+        self.verifica_endereco(ender)
+        return self.memoria[ender]
+
+    def write(self, ender, val):
+        self.verifica_endereco(ender)
+        self.memoria[ender] = val
+
 class CacheSimples:
     def __init(self, kc, ram):
       self.tam_cache = 2**kc
       self.dados = [0] * self.tam_cache
       self.bloco = -1
 
-    def read(self, endereco):
-        bloco_endereco = int( endereco / self.tam_cache)
-        if bloco_endereco == self.bloco:
+    def read(self, ender):
+        bloco_ender = int( endereco / self.tam_cache)
+        if bloco_ender == self.bloco:
             print('Cache hit')
-            pos = endereco - self.bloco * self.tam_cache
+            pos = ender - self.bloco * self.tam_cache
             return self.dados[pos]
 
         else:
@@ -36,48 +68,46 @@ class CacheSimples:
 
             #return...
 
-
-    def write(self, endereco, valor):
-        
+     def write(self, ender, valor):
 
 
-class RAM:
-    def __init__(self, k):
-        self.mem = []
-        for i in range(2**k):
-            self.mem.append(0)
 
-    def read(self, endereco):
-        return self.mem[endereco]
-    
-    def write(self, endereco, valor):
-        self.mem[endereco] = valor
 
-    def capacidade(self):
-        return len(self.mem)
+class CPU:
+    def __init__(self, mem, io):
+        self.mem = mem
+        self.io = io
+        self.PC = 0                    # program counter
+        self.A = self.B = self.C = 0   # registradores auxiliares
 
-class IO:
-    def __init__(self):
-        print('IO criado')
+    def run(self, ender):
+        self.PC = ender
+        # lê "instrução" no endereço PC
+        self.A = self.mem.read(self.PC)
+        self.PC += 1
+        self.B = self.mem.read(self.PC)
+        self.PC += 1
 
-    def output(self, msg):
-        print(msg, end='')
+        self.C = 1
+        while self.A <= self.B:
+            self.mem.write(self.A, self.C)
+            self.io.output(f"{self.A} -> {self.C}\n")
+            self.C += 1
+            self.A += 1
 
-    def input(self, prompt):
-        return input(prompt)
+# Programa Principal
 
-def main():
-    es=IO()
+try:
+
+    io = IO()
     ram = RAM(7)
-    cpu = CPU(ram, es)
+    cpu = CPU(ram, io)
 
-    ram.write(10, 100)
-    ram.write(11, 111)
+    endereco = 10
+    ram.write(endereco, 120)
+    ram.write(endereco+1, 130)
+    cpu.run(endereco)
 
-    cpu.run(10)
+except EnderecoInvalido as e:
+    print("Endereco invalido:", e.ender)
 
-    
-
-
-if __name__ == '__main__':
-    main()
