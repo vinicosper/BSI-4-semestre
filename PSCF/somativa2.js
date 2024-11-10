@@ -1,11 +1,21 @@
 /* global use, db */
 // MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+// The result of the last command run in a playground is shown on the results panel.
+// By default the first 20 documents will be returned with a cursor.
+// Use 'console.log()' to print to the debug output.
+// For more documentation on playgrounds please refer to
+// https://www.mongodb.com/docs/mongodb-vscode/playgrounds/
 
+// Select the database to use.
 use('mongodbVSCodePlaygroundDB');
+
 
 // Populando as coleções
 
-db.getCollection('ebooks-usuarios').insertMany([
+db.getCollection('usuarios').insertMany([
     { 
       _id: ObjectId("60d5f4d6f0d1e5f8a4a38c00"), 
       nome: "Carlos Silva", 
@@ -53,7 +63,7 @@ db.getCollection('ebooks-usuarios').insertMany([
     }
   ]);
 
-  db.getCollection('ebooks-produtos').insertMany([
+  db.getCollection('produtos').insertMany([
     { 
       _id: ObjectId("6722c84596b3d3e8d79274ef"), 
       nome: "Livro de Matemática - 3ª Edição", 
@@ -106,7 +116,7 @@ db.getCollection('ebooks-usuarios').insertMany([
     }
   ]);
 
-  db.getCollection('ebooks-transacoes').insertMany([
+  db.getCollection('transacoes').insertMany([
     {
       compradorId: ObjectId("60d5f4d6f0d1e5f8a4a38c00"),
       produtoId: ObjectId("6722c84596b3d3e8d79274f3"),
@@ -132,7 +142,7 @@ db.getCollection('ebooks-usuarios').insertMany([
       distancia: 3.1
     }
   ]);
-  db.getCollection('ebooks-avaliacoes').insertMany([
+  db.getCollection('avaliacoes').insertMany([
     {
       produtoId: ObjectId("6722c84596b3d3e8d79274f3"),
       usuarioId: ObjectId("60d5f4d6f0d1e5f8a4a38c00"),
@@ -157,7 +167,7 @@ db.getCollection('ebooks-usuarios').insertMany([
       respostaVendedor: "Agradeço o feedback!"
     }
   ]);
-  db.getCollection('ebooks-categorias').insertMany([
+  db.getCollection('categorias').insertMany([
     { nome: "Livros Didáticos", subcategorias: ["Matemática", "Português", "Inglês"] },
     { nome: "Aulas Particulares", subcategorias: ["História", "Química"] }
   ]);
@@ -511,7 +521,7 @@ db.avaliacoes.find(
 //Os usuários podem definir sua localização geográfica.
 
 
-db.getCollection('ebooks-usuarios').updateOne(
+db.getCollection('E-books-usuarios').updateOne(
     { _id: ObjectId("60d5f4d6f0d1e5f8a4a38c00") },
     { $set: { localizacao: { type: "Point", coordinates: [-46.6333, -23.5505] } } }
   );
@@ -607,7 +617,7 @@ db.transacoes.aggregate([
   db.transacoes.aggregate([
     {
       $lookup: {
-        from: "ebooks-produtos", // Fazer o join com a coleção de produtos
+        from: "E-books-produtos", // Fazer o join com a coleção de produtos
         localField: "produtoId", 
         foreignField: "_id", 
         as: "produtoDetalhes"
@@ -626,7 +636,7 @@ db.transacoes.aggregate([
     },
     {
       $lookup: {
-        from: "ebooks-usuarios", // Adiciona o nome do vendedor no relatório
+        from: "E-books-usuarios", // Adiciona o nome do vendedor no relatório
         localField: "_id", 
         foreignField: "_id", 
         as: "vendedor"
@@ -643,5 +653,3 @@ db.transacoes.aggregate([
       }
     }
   ]);
-
-  
